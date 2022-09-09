@@ -1,0 +1,42 @@
+-- By default this file is used by `persistFileWith` in Model.hs (which is imported by Foundation.hs)
+-- Syntax for this file here: https://github.com/yesodweb/persistent/blob/master/docs/Persistent-entity-syntax.md
+
+User
+  -- | username
+  uname Text
+  -- | account creation time; stored as seconds since the epoch
+  creationtime Int
+  UniqueUserUname uname
+  deriving Eq Show
+
+Problem
+  -- | this is displayed
+  title Text
+  -- | problem directory; should minimally contain an desc and tc/
+  dir FilePath
+  -- | link to url, if any
+  pdfurl Text Maybe
+  -- | problem tags; comma seperated
+  tags Text
+  -- | time limit in microseconds
+  tlimit Int
+  deriving Eq Show
+
+Language json
+  name Text
+  deriving Eq Show
+
+Submission json
+  -- | which problem this is for
+  problemid ProblemId
+  language LanguageId
+  -- | score of the submission, between 0 and 100 inclusive
+  score Int
+  code Text
+  deriving Eq Show
+
+UserSolves
+  -- | id of user who solved problem
+  userid UserId
+  submissionid SubmissionId
+  deriving Eq Show
