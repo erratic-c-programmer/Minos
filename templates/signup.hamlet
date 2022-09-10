@@ -1,0 +1,7 @@
+<div .container>
+    <h1 .header>
+        Sign up
+
+    <form method=post action=@{SignupR} enctype=#{enctype}>
+        ^{formWidget}
+        <button type="submit" .btn .btn-default>Create account

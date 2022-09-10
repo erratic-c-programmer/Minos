@@ -9,6 +9,8 @@
 
 / HomeR GET POST
 
-/comments CommentR POST
-
 /profile ProfileR GET
+
+/signup SignupR GET POST
+
+/addproblem AddproblemR GET POST

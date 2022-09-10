@@ -4,17 +4,15 @@
 User
   -- | username
   uname Text
-  -- | account creation time; stored as seconds since the epoch
-  creationtime Int
+  creationtime UTCTime
+  pwhash Text
   UniqueUserUname uname
   deriving Eq Show
 
 Problem
-  -- | this is displayed
   title Text
   -- | problem directory; should minimally contain an desc and tc/
-  dir FilePath
-  -- | link to url, if any
+  dir Text
   pdfurl Text Maybe
   -- | problem tags; comma seperated
   tags Text

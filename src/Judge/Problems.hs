@@ -20,29 +20,6 @@ import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
 -- | Alias for a tuple representing a testcase: (input, output).
 type Testcase = (T.Text, T.Text)
 
--- | Registers the problem specified by the directory name in the database.
---   The specified directory should have 2 files ("metadata" and "desc"), and one directory ("tcs").
---
---   The file "metadata" should have exactly 3 lines. First line is the title; second line is a list
---   of tags, seperated by commas; and the third is the time limit in milliseconds.
---
---   The file "desc" should contain the problem description, in HTML.
---
---   Finally, the directory "tcs" should be structured as described [here](#tcdirfmt).
---
---   If any one of the above conditions is not met, a Nothing is returned; else, a 'Problem' is
---   returned.
-mkProblem :: FilePath -> IO (Maybe Problem)
-mkProblem dirName = do
-  cond <- doesFileExist (dirName ++ "/metadata") &&& doesFileExist (dirName ++ "/desc") &&& doesDirectoryExist (dirName ++ "tcs")
-  if cond
-    then do
-      [title, tlimit, tags] <- T.splitOn "\n" <$> TIO.readFile ("dirName/" ++ "metadata")
-      return $ Just (Problem title dirName Nothing tags (read $ T.unpack tlimit))
-    else return Nothing
-  where
-    (&&&) = liftM2 (&&)
-
 -- | Parses a directory of testcases into a @[[`Testcase`]]@. Takes a path to a directory and
 --   returns a list of subtasks, each containing seperate testcases.
 --
