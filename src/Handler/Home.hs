@@ -30,7 +30,7 @@ getHomeR = do
 
     defaultLayout $ do
         aDomId <- newIdent
-        setTitle "Midas"
+        setTitle "Minos"
         $(widgetFile "homepage")
 
 postHomeR :: Handler Html

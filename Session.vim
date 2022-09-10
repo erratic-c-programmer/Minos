@@ -21,7 +21,7 @@ badd +37 src/Judge/Submissions.hs
 badd +18 src/Model.hs
 badd +268 src/Foundation.hs
 badd +8 config/settings.yml
-badd +40 src/Handler/Home.hs
+badd +33 src/Handler/Home.hs
 badd +68 package.yaml
 badd +9 config/models.persistentmodels
 badd +15 src/Handler/Profile.hs
@@ -38,7 +38,7 @@ badd +16 app/DevelMain.hs
 badd +36 templates/default-layout.hamlet
 badd +34 templates/default-layout-wrapper.hamlet
 badd +7 templates/signup.hamlet
-badd +47 src/Handler/Signup.hs
+badd +23 src/Handler/Signup.hs
 badd +1 .gitignore
 argglobal
 %argdel
@@ -83,12 +83,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 1 - ((0 * winheight(0) + 23) / 46)
+let s:l = 15 - ((14 * winheight(0) + 23) / 46)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 1
-normal! 0
+keepjumps 15
+normal! 061|
 wincmd w
 argglobal
 if bufexists(fnamemodify("templates/signup.hamlet", ":p")) | buffer templates/signup.hamlet | else | edit templates/signup.hamlet | endif
@@ -133,8 +133,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
+wincmd =
 argglobal
 balt src/Handler/Home.hs
 setlocal fdm=manual
@@ -177,8 +176,8 @@ normal! zt
 keepjumps 23
 normal! 012|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
+2wincmd w
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/src/Application.hs
@@ -239,8 +238,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
+wincmd =
 argglobal
 balt ~/Devel/Minos/src/Handler/Home.hs
 setlocal fdm=manual
@@ -283,8 +281,7 @@ normal! zt
 keepjumps 37
 normal! 016|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/src/Model.hs
@@ -304,8 +301,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
+wincmd =
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -347,8 +343,7 @@ normal! zt
 keepjumps 9
 normal! 013|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/config/routes.yesodroutes
@@ -368,8 +363,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
+wincmd =
 argglobal
 balt ~/Devel/Minos/config/models.persistentmodels
 setlocal fdm=manual
@@ -412,18 +406,10 @@ normal! zt
 keepjumps 8
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 105 + 106) / 212)
-exe 'vert 2resize ' . ((&columns * 106 + 106) / 212)
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/package.yaml
-wincmd t
-let s:save_winminheight = &winminheight
-let s:save_winminwidth = &winminwidth
-set winminheight=0
-set winheight=1
-set winminwidth=0
-set winwidth=1
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -442,7 +428,7 @@ normal! zt
 keepjumps 68
 normal! 011|
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
-tabnext 8
+tabnext 2
 set stal=1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -450,15 +436,12 @@ endif
 unlet! s:wipebuf
 set winheight=1 winwidth=20
 let &shortmess = s:shortmess_save
-let &winminheight = s:save_winminheight
-let &winminwidth = s:save_winminwidth
 let s:sx = expand("<sfile>:p:r")."x.vim"
 if filereadable(s:sx)
   exe "source " . fnameescape(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
-nohlsearch
 let g:this_session = v:this_session
 let g:this_obsession = v:this_session
 doautoall SessionLoadPost
