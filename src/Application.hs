@@ -100,7 +100,7 @@ makeFoundation appSettings = do
     flip runLoggingT logFunc $
       createSqlitePool
         (sqlDatabase $ appDatabaseConf appSettings)
-        (sqlPoolSizeSignup$ appDatabaseConf appSettings)
+        (sqlPoolSize $ appDatabaseConf appSettings)
 
   -- Perform database migration using our application's logging settings.
   runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
