@@ -18,6 +18,7 @@ Problem
   tags Text
   -- | time limit in microseconds
   tlimit Int
+  UniqueProblemDir dir
   deriving Eq Show
 
 Language json

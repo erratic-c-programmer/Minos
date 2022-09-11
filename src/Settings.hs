@@ -58,6 +58,8 @@ data AppSettings = AppSettings
     -- ^ Copyright text to appear in the footer of the page
     , appAnalytics              :: Maybe Text
     -- ^ Google Analytics code
+    , appProblemDir             :: Text
+    -- ^ Where problems should be stored
 
     , appAuthDummyLogin         :: Bool
     -- ^ Indicate if auth dummy login should be enabled.
@@ -88,6 +90,7 @@ instance FromJSON AppSettings where
 
         appCopyright              <- o .:  "copyright"
         appAnalytics              <- o .:? "analytics"
+        appProblemDir             <- o .:  "problem-dir"
 
         appAuthDummyLogin         <- o .:? "auth-dummy-login"      .!= dev
 

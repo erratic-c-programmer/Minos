@@ -7,6 +7,9 @@
 
 module Handler.Addproblem where
 
+import Control.Exception (SomeException)
+import qualified Control.Monad.Catch as C
+import Data.Char
 import qualified Data.Text as T
 import Database.Persist.Sqlite (fromSqlKey)
 import Import
@@ -20,10 +23,10 @@ addProblemForm =
   renderBootstrap3 BootstrapBasicForm $
     Problem
       <$> areq textField (bfs' "Title") Nothing
-      <*> areq textField (bfs' "Filepath") Nothing
+      <*> areq hiddenField (bfs' "") (Just "")
       <*> aopt urlField (bfs' "PDF URL") Nothing
       <*> areq textField (bfs' "Tags") Nothing
-      <*> areq intField (bfs' "Time limit") (Just 1000000)
+      <*> areq intField (bfs' "Time limit (μs)") (Just 1000000)
   where
     bfs' :: Text -> FieldSettings site
     bfs' = bfs
@@ -44,6 +47,15 @@ postAddproblemR = do
   ((result, _), _) <- runFormPost addProblemForm
   case result of
     FormSuccess problem -> do
-      key <- runDB $ insert problem
-      redirect (AddproblemR, [("inserted", T.pack $ show $ fromSqlKey key)])
+      let
+      key <-
+        runDB . insertProblem $
+          problem
+            { problemDir = T.toLower . filter (isDigit ||| isAlpha) $ problemTitle problem
+            }
+      redirect (AddproblemR, [("inserted", T.pack . show . fromSqlKey $ key)])
     _ -> redirect (AddproblemR, [("failed", "1")])
+  where
+    (|||) = liftM2 (||)
+    insertProblem :: (PersistEntityBackend t ~ BaseBackend backend) => t -> ReaderT backend m (Either (Key Problem) ())
+    insertProblem problem = (Left . insert $ problem) `C.catch` (\(SomeException e) -> return ())

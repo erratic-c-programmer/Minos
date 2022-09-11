@@ -134,6 +134,12 @@ instance Yesod App where
                 },
             NavbarRight $
               MenuItem
+                { menuItemLabel = "Sign up",
+                  menuItemRoute = SignupR,
+                  menuItemAccessCallback = isNothing muser
+                },
+            NavbarRight $
+              MenuItem
                 { menuItemLabel = "Logout",
                   menuItemRoute = AuthR LogoutR,
                   menuItemAccessCallback = isJust muser
