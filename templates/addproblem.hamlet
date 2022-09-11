@@ -3,7 +3,7 @@
         Add a new torture tool
 
     $if failedp
-        <div .alert .alert-danger><p>Oops, there was an error.
+        <div .alert .alert-danger><p>Oops, there was an error: #{reason}.
     $else
         $maybe id <- inserted
             <div .alert .alert-success><p>Inserted problem ##{id}
