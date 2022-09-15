@@ -1,0 +1,11 @@
+<div .container>
+    <h1 .header>
+        Torture rack: #{probTitle}
+
+    <div .container>
+        #{probContent}
+
+    <div .container>
+        <form method=post action=@{ProblemsR probId} enctype=#{enctype}>
+            ^{formWidget}
+            <button type="submit" .btn .btn-default>Add problem

@@ -1,0 +1,15 @@
+<div .container>
+    <h1 .header>Problems
+
+    <div .container>
+        <table .table>
+            <thead>
+                <tr>
+                    <th>##
+                    <th>Title
+
+            <tbody>
+                $forall (Entity key (Problem title _ _ _ _ _)) <- problems
+                    <tr>
+                        <td>#{fromSqlKey key}
+                        <td><a href="/problems/#{fromSqlKey key}">#{title}

@@ -161,6 +161,8 @@ instance Yesod App where
     pc <- widgetToPageContent $ do
       addStylesheet $ StaticR css_bootstrap_css
 
+      let failedp = False
+          reason = "" :: Text
       $(widgetFile "default-layout")
     withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
@@ -182,6 +184,8 @@ instance Yesod App where
   isAuthorized (StaticR _) _ = return Authorized
   isAuthorized AddproblemR _ = return Authorized -- TODO
   isAuthorized SignupR _ = return Authorized
+  isAuthorized (ProblemsR _) _ = return Authorized
+  isAuthorized ProblemsListR _ = return Authorized
   -- the profile route requires that the user is authenticated, so we
   -- delegate to that function
   isAuthorized ProfileR _ = isAuthenticated

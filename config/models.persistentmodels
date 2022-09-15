@@ -11,7 +11,9 @@ User
 
 Problem
   title Text
-  -- | problem directory; should minimally contain an desc and tc/
+  -- | HTML statement
+  statement Text
+  -- | testcase directory
   dir Text
   pdfurl Text Maybe
   -- | problem tags; comma seperated
@@ -23,6 +25,7 @@ Problem
 
 Language json
   name Text
+  UniqueLanguageName name
   deriving Eq Show
 
 Submission json

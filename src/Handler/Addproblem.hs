@@ -13,19 +13,22 @@ import qualified Data.ByteString.Lazy as BS
 import Data.Char
 import Data.Maybe
 import qualified Data.Text as T
+import qualified Data.Text.Encoding as T
 import Database.Persist.Sqlite (fromSqlKey)
 import Import
 import Settings (compileTimeAppSettings)
 import System.Directory
 import Text.Read
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), bfs, renderBootstrap3)
+import qualified GHC.IO.Handle.Internals as T
 
 data ProblemForm = ProblemForm
-  { problemTitle' :: Text
-  , problemPdfurl' :: Maybe Text
-  , problemTags' :: Text
-  , problemTlimit' :: Int
-  , problemTests' :: FileInfo
+  { problemTitle' :: Text,
+    problemStatement' :: FileInfo,
+    problemPdfurl' :: Maybe Text,
+    problemTags' :: Text,
+    problemTlimit' :: Int,
+    problemTests' :: FileInfo
   }
 
 addProblemForm :: Form ProblemForm
@@ -33,9 +36,10 @@ addProblemForm =
   renderBootstrap3 BootstrapBasicForm $
     ProblemForm
       <$> areq textField (bfs' "Title") Nothing
+      <*> fileAFormReq (bfs' "Problem statement (HTML)")
       <*> aopt urlField (bfs' "PDF URL") Nothing
       <*> areq textField (bfs' "Tags") Nothing
-      <*> areq intField (bfs' "Time limit (μs)") (Just 1000000)
+      <*> areq intField (bfs' "Time limit (ms)") (Just 1000)
       <*> fileAFormReq (bfs' "Testcases (zipped)")
   where
     bfs' :: Text -> FieldSettings site
@@ -67,23 +71,41 @@ postAddproblemR = do
   case result of
     FormFailure e -> redirect (AddproblemR, [("failed", "1"), ("reason", T.pack $ show e)])
     FormMissing -> redirect (AddproblemR, [("failed", "1")])
-    FormSuccess problem' ->
-      ( do
-          let pdir = T.toLower . filter (isDigit ||| isAlpha) $ problemTitle' problem'
-          -- we create the dir first so if it fails we don't have a bad DB entry
-          tcbs <- fileSourceByteString $ problemTests' problem'
-          liftIO $ createProblemFiles tcbs pdir
-          key <-
-            runDB . insert $
-              Problem
-                (problemTitle' problem')
-                pdir
-                (problemPdfurl' problem')
-                (problemTags' problem')
-                (problemTlimit' problem')
-          redirect (AddproblemR, [("inserted", T.pack . show . fromSqlKey $ key)])
-      )
-        `catch` \(SomeException e) ->
-          redirect (AddproblemR, [("failed", "1"), ("reason", T.pack $ show e)])
+    FormSuccess problem' -> do
+      res <-
+        ( do
+            let pdir = T.toLower . filter (isDigit ||| isAlpha) $ problemTitle' problem'
+            -- we create the dir first so if it fails we don't have a bad DB entry
+            tcbs <- fileSourceByteString $ problemTests' problem'
+            liftIO $ createProblemFiles tcbs pdir
+            stmtbs <- fileSourceByteString $ problemStatement' problem'
+            key <-
+              runDB . insert $
+                Problem
+                  (problemTitle' problem')
+                  (T.decodeUtf8 stmtbs)
+                  pdir
+                  (problemPdfurl' problem')
+                  (problemTags' problem')
+                  (problemTlimit' problem' * 1000)
+            return $ Right key
+          )
+          `catch` \e ->
+            return $ Left e
+
+      either
+        ( \(SomeException e) ->
+            redirect
+              ( AddproblemR,
+                [("failed", "1"), ("reason", T.pack $ show e)]
+              )
+        )
+        ( \k ->
+            redirect
+              ( AddproblemR,
+                [("inserted", T.pack . show . fromSqlKey $ k)]
+              )
+        )
+        res
   where
     (|||) = liftM2 (||)

@@ -14,3 +14,6 @@
 /signup SignupR GET POST
 
 /addproblem AddproblemR GET POST
+
+/problems ProblemsListR GET
+/problems/#ProblemId ProblemsR GET POST

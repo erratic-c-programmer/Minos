@@ -39,6 +39,7 @@ import Handler.Common
 import Handler.Home
 import Handler.Signup
 import Handler.Profile
+import Handler.Problems
 import Import
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
@@ -104,6 +105,9 @@ makeFoundation appSettings = do
 
   -- Perform database migration using our application's logging settings.
   runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
+  -- Insert our languages
+  void (runSqlPool (insert $ Language "C++") pool)
+    `catch` \(SomeException e) -> return ()
 
   -- Return the foundation
   return $ mkFoundation pool
