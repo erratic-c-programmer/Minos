@@ -21,8 +21,6 @@
                         <a href="@{route}">#{label}
 
 <!-- Page Contents -->
-    $if failedp
-        <div .alert .alert-danger><p>Oops, there was an error: #{reason}.
 
 <div .container>
     $if not $ Just HomeR == mcurrentRoute

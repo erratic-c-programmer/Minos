@@ -11,16 +11,18 @@ User
 
 Problem
   title Text
-  -- | HTML statement
-  statement Text
-  -- | testcase directory
-  dir Text
+  statement Text  -- HTML statement
+  dir Text  -- testcase directory
   pdfurl Text Maybe
-  -- | problem tags; comma seperated
-  tags Text
-  -- | time limit in microseconds
-  tlimit Int
+  tags Text  -- problem tags; comma seperated
+  tlimit Int  -- time limit in microseconds
   UniqueProblemDir dir
+  deriving Eq Show
+
+ProblemCmds
+  problem ProblemId
+  language LanguageId
+  Primary problem language
   deriving Eq Show
 
 Language json

@@ -1,6 +1,7 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
@@ -14,13 +15,13 @@ import Data.Char
 import Data.Maybe
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
-import Database.Persist.Sqlite (fromSqlKey)
+import Database.Persist.Sqlite
+import qualified GHC.IO.Handle.Internals as T
 import Import
 import Settings (compileTimeAppSettings)
 import System.Directory
 import Text.Read
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), bfs, renderBootstrap3)
-import qualified GHC.IO.Handle.Internals as T
 
 data ProblemForm = ProblemForm
   { problemTitle' :: Text,
@@ -30,6 +31,45 @@ data ProblemForm = ProblemForm
     problemTlimit' :: Int,
     problemTests' :: FileInfo
   }
+
+langsM :: Handler [(Text, Key Language)]
+langsM =
+  map (\(Entity k v) -> (languageName v, k))
+    <$> runDB (selectList [] [])
+
+addProblemFormM :: Html -> MForm Handler (FormResult ProblemForm, Widget)
+addProblemFormM extra = do
+  (titleRes, titleView) <- mreq textField (bfs' "Title") Nothing
+  (stmtRes, stmtView) <- mreq fileField (bfs' "problem statement (HTML)") Nothing
+  (pdfRes, pdfView) <- mopt urlField (bfs' "PDF URL") Nothing
+  (tagsRes, tagsView) <- mreq textField (bfs' "Tags") Nothing
+  (tlimRes, tlimView) <- mreq intField (bfs' "Tags") $ Just 1000
+  (tcRes, tcView) <- mreq fileField (bfs' "Testcases (zipped)") Nothing
+
+  let problemRes =
+        ProblemForm
+          <$> titleRes
+          <*> stmtRes
+          <*> pdfRes
+          <*> tagsRes
+          <*> tlimRes
+          <*> tcRes
+  let formWidget = do
+        let views = [titleView, stmtView, pdfView, tagsView, tlimView, tcView]
+        toWidget
+          [lucius|
+          |]
+        [whamlet|
+                #{extra}
+                $forall view <- views
+                  <div .form-group>
+                    <label for=#{fvId view}>#{fvLabel view}
+                    ^{fvInput view}
+        |]
+  return (problemRes, formWidget)
+  where
+    bfs' :: Text -> FieldSettings site
+    bfs' = bfs
 
 addProblemForm :: Form ProblemForm
 addProblemForm =
@@ -47,7 +87,7 @@ addProblemForm =
 
 getAddproblemR :: Handler Html
 getAddproblemR = do
-  (formWidget, enctype) <- generateFormPost addProblemForm
+  (formWidget, enctype) <- generateFormPost addProblemFormM
   defaultLayout $ do
     setTitle "Add problem"
     failedp' <- lookupGetParam "failed"

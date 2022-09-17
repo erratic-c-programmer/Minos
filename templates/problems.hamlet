@@ -8,4 +8,4 @@
     <div .container>
         <form method=post action=@{ProblemsR probId} enctype=#{enctype}>
             ^{formWidget}
-            <button type="submit" .btn .btn-default>Add problem
+            <button type="submit" .btn .btn-primary>Submit

@@ -107,7 +107,7 @@ makeFoundation appSettings = do
   runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
   -- Insert our languages
   void (runSqlPool (insert $ Language "C++") pool)
-    `catch` \(SomeException e) -> return ()
+    `catch` \(SomeException _) -> return ()
 
   -- Return the foundation
   return $ mkFoundation pool

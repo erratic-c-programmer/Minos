@@ -2,6 +2,13 @@
     <h1 .header>
         Add a new torture tool
 
+    $if failedp
+        <div .alert .alert-danger><p>Oops, there was an error: #{reason}.
+    $else
+        $maybe id <- inserted
+            <div .alert .alert-success><p>Inserted problem ##{id}
+        $nothing
+
     <form method=post action=@{AddproblemR} enctype=#{enctype}>
         ^{formWidget}
-        <button type="submit" .btn .btn-default>Add problem
+        <button type="submit" .btn .btn-primary>Add problem
