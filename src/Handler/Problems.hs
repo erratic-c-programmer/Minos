@@ -6,15 +6,17 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Handler.Problems where
+module Handler.Problems
+  ( getProblemsListR,
+    getProblemsR,
+    postProblemsR,
+  )
+where
 
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Database.Persist.Sqlite (fromSqlKey)
 import Import
-import Model
-import Yesod
-import Yesod.Form
 import Yesod.Form.Bootstrap3
 
 -- PROBLEMLIST

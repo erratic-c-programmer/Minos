@@ -7,7 +7,11 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Handler.Addproblem where
+module Handler.Addproblem
+  ( getAddproblemR,
+    postAddproblemR,
+  )
+where
 
 import Codec.Archive.Zip
 import qualified Data.ByteString.Lazy as BS
@@ -16,9 +20,7 @@ import Data.Maybe
 import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Database.Persist.Sqlite
-import qualified GHC.IO.Handle.Internals as T
 import Import
-import Settings (compileTimeAppSettings)
 import System.Directory
 import Text.Read
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), bfs, renderBootstrap3)

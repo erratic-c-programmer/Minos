@@ -6,16 +6,19 @@
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TypeFamilies #-}
 
-module Judge.Problems where
+module Judge.Problems
+  ( Testcase,
+    readTCDir,
+  )
+where
 
-import Model
 import Control.Exception (SomeException, catch)
-import Control.Monad (liftM2, zipWithM)
+import Control.Monad (zipWithM)
 import Data.List.Extra (groupBy, sortOn, stripSuffix)
 import Data.Maybe (mapMaybe)
 import qualified Data.Text as T
 import qualified Data.Text.IO as TIO
-import System.Directory (doesDirectoryExist, doesFileExist, listDirectory)
+import System.Directory (listDirectory)
 
 -- | Alias for a tuple representing a testcase: (input, output).
 type Testcase = (T.Text, T.Text)

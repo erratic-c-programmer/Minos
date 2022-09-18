@@ -1,18 +1,23 @@
-{-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE ScopedTypeVariables #-}
 
 -- |
 --  Everything to do with running submissions, judging code etc.
-module Judge.Submissions where
+module Judge.Submissions
+  ( Runnable,
+    runSubmission,
+    evalSubmission,
+  )
+where
 
-import Judge.Problems
 import Control.Monad.Extra (concatMapM)
 import qualified Control.Monad.Parallel as PMon
 import Data.List.Extra (chunksOf)
+import qualified Data.Text as T
+import Judge.Problems
 import System.Clock (Clock (Monotonic), getTime, toNanoSecs)
 import System.Exit (ExitCode (ExitSuccess))
 import System.Process.Text (readProcessWithExitCode)
-import qualified Data.Text as T
 
 -- | Datatype representing some runnable thing.
 data Runnable = SchemeFile String | PythonFile String | GenericBinary String

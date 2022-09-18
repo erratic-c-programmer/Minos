@@ -15,13 +15,13 @@ else
 endif
 badd +30 templates/homepage.hamlet
 badd +2 app/main.hs
-badd +110 src/Application.hs
+badd +1 src/Application.hs
 badd +1 src/Judge/Problems.hs
-badd +35 src/Judge/Submissions.hs
-badd +14 src/Model.hs
+badd +42 src/Judge/Submissions.hs
+badd +1 src/Model.hs
 badd +172 src/Foundation.hs
 badd +34 config/settings.yml
-badd +29 src/Handler/Home.hs
+badd +20 src/Handler/Home.hs
 badd +1 package.yaml
 badd +18 config/models.persistentmodels
 badd +15 src/Handler/Profile.hs
@@ -33,21 +33,23 @@ badd +1 config/routes.yesodroutes
 badd +26 Minos.cabal
 badd +14 templates/addproblem.hamlet
 badd +1 src/Handler/Common.hs
-badd +40 src/Handler/Addproblem.hs
+badd +1 src/Handler/Addproblem.hs
 badd +16 app/DevelMain.hs
 badd +38 templates/default-layout.hamlet
 badd +34 templates/default-layout-wrapper.hamlet
 badd +1 templates/signup.hamlet
-badd +44 src/Handler/Signup.hs
+badd +1 src/Handler/Signup.hs
 badd +1 .gitignore
 badd +7 .git/info/exclude
 badd +6 src/Import/NoFoundation.hs
 badd +5 src/Import.hs
 badd +11 templates/problems.hamlet
-badd +60 src/Handler/Problems.hs
+badd +2 src/Handler/Problems.hs
 badd +46 stack.yaml
 badd +15 templates/problemslist.hamlet
 badd +73 templates/default-layout.lucius
+badd +13 test/Handler/CommentSpec.hs
+badd +1 Minos
 argglobal
 %argdel
 $argadd templates/homepage.hamlet
@@ -77,8 +79,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 argglobal
 balt templates/homepage.hamlet
 setlocal fdm=manual
@@ -91,7 +92,7 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 11 - ((10 * winheight(0) + 17) / 35)
+let s:l = 11 - ((10 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -114,15 +115,15 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 14 - ((13 * winheight(0) + 17) / 35)
+let s:l = 14 - ((13 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
 keepjumps 14
 normal! 047|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+2wincmd w
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/src/Handler/Addproblem.hs
@@ -142,8 +143,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 argglobal
 balt ~/Devel/Minos/src/Handler/Problems.hs
 setlocal fdm=manual
@@ -156,19 +156,19 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 40 - ((15 * winheight(0) + 17) / 35)
+let s:l = 16 - ((15 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 40
-normal! 020|
+keepjumps 16
+normal! 023|
 wincmd w
 argglobal
 if bufexists(fnamemodify("~/Devel/Minos/src/Handler/Problems.hs", ":p")) | buffer ~/Devel/Minos/src/Handler/Problems.hs | else | edit ~/Devel/Minos/src/Handler/Problems.hs | endif
 if &buftype ==# 'terminal'
   silent file ~/Devel/Minos/src/Handler/Problems.hs
 endif
-balt ~/Devel/Minos/src/Handler/Home.hs
+balt ~/Devel/Minos/src/Handler/Signup.hs
 setlocal fdm=manual
 setlocal fde=0
 setlocal fmr={{{,}}}
@@ -179,15 +179,14 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 35 - ((0 * winheight(0) + 17) / 35)
+let s:l = 2 - ((1 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 35
-normal! 040|
+keepjumps 2
+normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/src/Application.hs
@@ -207,8 +206,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -220,11 +218,11 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 110 - ((5 * winheight(0) + 17) / 35)
+let s:l = 1 - ((0 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 110
+keepjumps 1
 normal! 029|
 wincmd w
 argglobal
@@ -243,15 +241,14 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 58 - ((14 * winheight(0) + 17) / 35)
+let s:l = 58 - ((18 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
 keepjumps 58
 normal! 038|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/src/Foundation.hs
@@ -267,7 +264,7 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 172 - ((25 * winheight(0) + 17) / 35)
+let s:l = 172 - ((32 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -291,8 +288,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 argglobal
 balt ~/Devel/Minos/src/Handler/Home.hs
 setlocal fdm=manual
@@ -305,12 +301,12 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 38 - ((20 * winheight(0) + 17) / 35)
+let s:l = 1 - ((0 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 38
-normal! 027|
+keepjumps 1
+normal! 033|
 wincmd w
 argglobal
 if bufexists(fnamemodify("~/Devel/Minos/src/Judge/Submissions.hs", ":p")) | buffer ~/Devel/Minos/src/Judge/Submissions.hs | else | edit ~/Devel/Minos/src/Judge/Submissions.hs | endif
@@ -328,15 +324,14 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 35 - ((26 * winheight(0) + 17) / 35)
+let s:l = 42 - ((37 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
-keepjumps 35
-normal! 018|
+keepjumps 42
+normal! 015|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/src/Model.hs
@@ -356,8 +351,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -369,7 +363,7 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 14 - ((7 * winheight(0) + 17) / 35)
+let s:l = 14 - ((9 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -392,15 +386,14 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 25 - ((12 * winheight(0) + 17) / 35)
+let s:l = 25 - ((16 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
 keepjumps 25
 normal! 024|
 wincmd w
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/config/routes.yesodroutes
@@ -420,8 +413,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 argglobal
 balt ~/Devel/Minos/config/models.persistentmodels
 setlocal fdm=manual
@@ -434,7 +426,7 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 19 - ((16 * winheight(0) + 17) / 35)
+let s:l = 19 - ((18 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -457,15 +449,14 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 8 - ((5 * winheight(0) + 17) / 35)
+let s:l = 8 - ((7 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
 keepjumps 8
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
 tabnext
 edit ~/Devel/Minos/package.yaml
@@ -485,8 +476,7 @@ set winminheight=0
 set winheight=1
 set winminwidth=0
 set winwidth=1
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 argglobal
 setlocal fdm=manual
 setlocal fde=0
@@ -498,7 +488,7 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 53 - ((29 * winheight(0) + 17) / 35)
+let s:l = 53 - ((37 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
@@ -521,17 +511,16 @@ setlocal fdn=20
 setlocal fen
 silent! normal! zE
 let &fdl = &fdl
-let s:l = 18 - ((0 * winheight(0) + 17) / 35)
+let s:l = 18 - ((0 * winheight(0) + 22) / 45)
 if s:l < 1 | let s:l = 1 | endif
 keepjumps exe s:l
 normal! zt
 keepjumps 18
 normal! 0
 wincmd w
-exe 'vert 1resize ' . ((&columns * 79 + 79) / 159)
-exe 'vert 2resize ' . ((&columns * 79 + 79) / 159)
+wincmd =
 if exists(':tcd') == 2 | tcd ~/Devel/Minos | endif
-tabnext 2
+tabnext 1
 set stal=1
 if exists('s:wipebuf') && len(win_findbuf(s:wipebuf)) == 0 && getbufvar(s:wipebuf, '&buftype') isnot# 'terminal'
   silent exe 'bwipe ' . s:wipebuf
@@ -547,7 +536,6 @@ if filereadable(s:sx)
 endif
 let &g:so = s:so_save | let &g:siso = s:siso_save
 set hlsearch
-nohlsearch
 let g:this_session = v:this_session
 let g:this_obsession = v:this_session
 doautoall SessionLoadPost

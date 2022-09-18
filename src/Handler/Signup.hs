@@ -5,18 +5,20 @@
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Handler.Signup where
+module Handler.Signup
+  ( getSignupR,
+    postSignupR,
+  )
+where
 
 import qualified Data.Text as T
-import Database.Persist.Sqlite (fromSqlKey)
 import Import
-import Yesod
 import Yesod.Auth.HashDB
 import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), bfs, renderBootstrap3)
 
 data User' = User'
-  { user'Uname :: T.Text,
-    user'Password :: T.Text
+  { userUname' :: T.Text,
+    userPassword' :: T.Text
   }
 
 signupForm :: Form User'
@@ -41,7 +43,7 @@ postSignupR = do
   case result of
     FormSuccess user' -> do
       time <- liftIO getCurrentTime
-      user <- liftIO $ setPassword (user'Password user') $ User (user'Uname user') time ""
+      user <- liftIO $ setPassword (userPassword' user') $ User (userUname' user') time ""
       _ <- runDB $ insert user
       redirect HomeR
     _ -> undefined
