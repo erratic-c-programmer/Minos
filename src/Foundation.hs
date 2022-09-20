@@ -122,6 +122,12 @@ instance Yesod App where
                 },
             NavbarLeft $
               MenuItem
+                { menuItemLabel = "Problems",
+                  menuItemRoute = ProblemsListR,
+                  menuItemAccessCallback = True -- TODO
+                },
+            NavbarLeft $
+              MenuItem
                 { menuItemLabel = "Add Problem",
                   menuItemRoute = AddproblemR,
                   menuItemAccessCallback = True -- TODO
@@ -161,8 +167,6 @@ instance Yesod App where
     pc <- widgetToPageContent $ do
       addStylesheet $ StaticR css_bootstrap_css
 
-      let failedp = False
-          reason = "" :: Text
       $(widgetFile "default-layout")
     withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
