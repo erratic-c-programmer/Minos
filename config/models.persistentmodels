@@ -19,9 +19,10 @@ Problem
   UniqueProblemDir dir
   deriving Eq Show
 
-ProblemCmds
+ProblemCmd
   problem ProblemId
   language LanguageId
+  command Text
   Primary problem language
   deriving Eq Show
 

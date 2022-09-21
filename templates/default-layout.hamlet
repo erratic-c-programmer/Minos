@@ -1,24 +1,22 @@
 
 <!-- Static navbar -->
-<nav .navbar.navbar-default.navbar-static-top>
+<nav .navbar .navbar-dark .navbar-expand-lg>
     <div .container>
         <div .navbar-header>
-            <button type="button" .navbar-toggle.collapsed data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <button type="button" .navbar-toggler data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
                 <span class="sr-only">Toggle navigation
-                <span class="icon-bar">
-                <span class="icon-bar">
-                <span class="icon-bar">
+                <span class="navbar-toggler-icon">
 
-        <div #navbar .collapse.navbar-collapse>
-            <ul .nav.navbar-nav>
+        <div #navbar .collapse .navbar-collapse>
+            <ul .nav .navbar-nav .mr-auto>
                 $forall MenuItem label route _ <- navbarLeftFilteredMenuItems
-                    <li :Just route == mcurrentRoute:.active>
-                        <a href="@{route}">#{label}
+                    <li .nav-item :Just route == mcurrentRoute:.active>
+                        <a .nav-link href="@{route}">#{label}
 
-            <ul .nav.navbar-nav.navbar-right>
+            <ul .nav .navbar-nav .navbar-right .ml-auto>
                 $forall MenuItem label route _ <- navbarRightFilteredMenuItems
-                    <li :Just route == mcurrentRoute:.active>
-                        <a href="@{route}">#{label}
+                    <li .nav-item :Just route == mcurrentRoute:.active>
+                        <a .nav-link href="@{route}">#{label}
 
 <!-- Page Contents -->
 
@@ -26,13 +24,13 @@
     $if not $ Just HomeR == mcurrentRoute
         <ul .breadcrumb>
             $forall bc <- parents
-                <li>
+                <li .breadcrumb-item>
                     <a href="@{fst bc}">#{snd bc}
 
-            <li .active>#{title}
+            <li .active .breadcrumb-item>#{title}
 
     $maybe msg <- mmsg
-      <div .alert.alert-info #message>#{msg}
+      <div .alert .alert-info #message>#{msg}
 
 
 $if (Just HomeR == mcurrentRoute)

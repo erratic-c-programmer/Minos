@@ -14,7 +14,7 @@ where
 import qualified Data.Text as T
 import Import
 import Yesod.Auth.HashDB
-import Yesod.Form.Bootstrap3 (BootstrapFormLayout (..), bfs, renderBootstrap3)
+import Yesod.Form.Bootstrap4 (BootstrapFormLayout (..), bfs, renderBootstrap4)
 
 data User' = User'
   { userUname' :: T.Text,
@@ -23,7 +23,7 @@ data User' = User'
 
 signupForm :: Form User'
 signupForm =
-  renderBootstrap3 BootstrapBasicForm $
+  renderBootstrap4 BootstrapBasicForm $
     User'
       <$> areq textField (bfs' "Username") Nothing
       <*> areq textField (bfs' "Password") Nothing

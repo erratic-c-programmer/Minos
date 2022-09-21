@@ -17,7 +17,7 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Database.Persist.Sqlite (fromSqlKey)
 import Import
-import Yesod.Form.Bootstrap3
+import Yesod.Form.Bootstrap4 (BootstrapFormLayout (..), bfs, renderBootstrap4)
 
 -- PROBLEMLIST
 
@@ -40,7 +40,7 @@ data SubmissionForm = SubmissionForm
 
 submissionForm :: [(Text, Key Language)] -> Form SubmissionForm
 submissionForm langs =
-  renderBootstrap3 BootstrapBasicForm $
+  renderBootstrap4 BootstrapBasicForm $
     SubmissionForm
       <$> areq (selectFieldList langs) (bfs' "Language") Nothing
       <*> fileAFormReq (bfs' "Code file")

@@ -13,6 +13,7 @@ import Control.Monad.Logger (LogSource)
 -- Used only when in "auth-dummy-login" setting is enabled.
 
 import qualified Data.CaseInsensitive as CI
+import qualified Data.Text as T
 import qualified Data.Text.Encoding as TE
 import Database.Persist.Sql (ConnectionPool, runSqlPool)
 import Import.NoFoundation
@@ -23,6 +24,7 @@ import Yesod.Auth.HashDB
 import Yesod.Core.Types (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
 import Yesod.Default.Util (addStaticContentExternal)
+import Database.Persist.Sqlite (fromSqlKey)
 
 -- | The foundation datatype for your application. This can be a good place to
 -- keep settings and values requiring initialization before your application
@@ -166,8 +168,8 @@ instance Yesod App where
 
     pc <- widgetToPageContent $ do
       addStylesheet $ StaticR css_bootstrap_css
-
       $(widgetFile "default-layout")
+
     withUrlRenderer $(hamletFile "templates/default-layout-wrapper.hamlet")
 
   -- The page to be redirected to when authentication is required.
@@ -195,7 +197,7 @@ instance Yesod App where
   isAuthorized ProfileR _ = isAuthenticated
 
   -- Don't restrict maximum file upload size
-  maximumContentLength _ _ = Nothing 
+  maximumContentLength _ _ = Nothing
 
   -- This function creates static content files in the static folder
   -- and names them based on a hash of their content. This allows
@@ -243,8 +245,11 @@ instance YesodBreadcrumbs App where
     Handler (Text, Maybe (Route App))
   breadcrumb HomeR = return ("Home", Nothing)
   breadcrumb (AuthR _) = return ("Login", Just HomeR)
-  breadcrumb ProfileR = return ("Profile", Just HomeR)
-  breadcrumb _ = return ("home", Nothing)
+  breadcrumb ProblemsListR = return ("Problems", Just HomeR)
+  breadcrumb (ProblemsR n) = return (T.pack $ "Problem #" ++ show (fromSqlKey n), Just HomeR)
+  breadcrumb AddproblemR = return ("Add problem", Just HomeR)
+  breadcrumb SignupR = return ("Sign up", Just HomeR)
+  breadcrumb _ = return ("Out in the wild", Nothing)
 
 -- How to run database actions.
 instance YesodPersist App where

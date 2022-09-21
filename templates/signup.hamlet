@@ -4,4 +4,4 @@
 
     <form method=post action=@{SignupR} enctype=#{enctype}>
         ^{formWidget}
-        <button type="submit" .btn .btn-default>Create account
+        <button type="submit" .btn .btn-primary>Create account

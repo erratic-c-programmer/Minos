@@ -2,6 +2,7 @@
 {-# LANGUAGE OverloadedStrings #-}
 {-# LANGUAGE RecordWildCards #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE ViewPatterns #-}
 {-# LANGUAGE NoImplicitPrelude #-}
@@ -37,9 +38,9 @@ import Database.Persist.Sqlite
 import Handler.Addproblem
 import Handler.Common
 import Handler.Home
-import Handler.Signup
-import Handler.Profile
 import Handler.Problems
+import Handler.Profile
+import Handler.Signup
 import Import
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)
@@ -106,8 +107,9 @@ makeFoundation appSettings = do
   -- Perform database migration using our application's logging settings.
   runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
   -- Insert our languages
-  void (runSqlPool (insert $ Language "C++") pool)
-    `catch` \(SomeException _) -> return ()
+  void $ runSqlPool
+      (mapM (try @_ @SomeException . insert . Language) ["C++", "Python"])
+      pool
 
   -- Return the foundation
   return $ mkFoundation pool
