@@ -32,6 +32,7 @@ ip-from-header: "_env:YESOD_IP_FROM_HEADER:false"
 # See https://github.com/yesodweb/yesod/wiki/Configuration#parsing-numeric-values-as-strings
 
 problem-dir: "_env:MINOS_PROBLEM_DIR:problems"
+submission-dir: "_env:MINOS_PROBLEM_DIR:submissions"
 
 database:
   # See config/test-settings.yml for an override during tests

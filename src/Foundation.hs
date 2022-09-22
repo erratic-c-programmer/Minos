@@ -21,6 +21,7 @@ import Text.Hamlet (hamletFile)
 import Text.Jasmine (minifym)
 import Yesod.Auth.Dummy
 import Yesod.Auth.HashDB
+import Yesod.Banner
 import Yesod.Core.Types (Logger)
 import qualified Yesod.Core.Unsafe as Unsafe
 import Yesod.Default.Util (addStaticContentExternal)
@@ -107,6 +108,7 @@ instance Yesod App where
   defaultLayout widget = do
     master <- getYesod
     mmsg <- getMessage
+    let bannersWidget = mkBannersWidget =<< getBanners
 
     muser <- maybeAuthPair
     mcurrentRoute <- getCurrentRoute

@@ -28,20 +28,18 @@ ProblemCmd
 
 Language json
   name Text
+  fileext Text
   UniqueLanguageName name
   deriving Eq Show
 
 Submission json
-  -- | which problem this is for
   problemid ProblemId
   language LanguageId
-  -- | score of the submission, between 0 and 100 inclusive
   score Int
-  code Text
+  codeFile Text
   deriving Eq Show
 
 UserSolves
-  -- | id of user who solved problem
   userid UserId
   submissionid SubmissionId
   deriving Eq Show

@@ -21,8 +21,9 @@ import qualified Data.Text as T
 import qualified Data.Text.Encoding as T
 import Database.Persist.Sqlite (fromSqlKey)
 import Import
-import System.Directory (createDirectory)
+import System.Directory (createDirectoryIfMissing)
 import Text.Read (readMaybe)
+import Yesod.Banner
 import Yesod.Form.Bootstrap4 (bfs)
 
 data ProblemForm = ProblemForm
@@ -94,20 +95,14 @@ getAddproblemR = do
   (formWidget, enctype) <- generateFormPost $ addProblemForm langs
   defaultLayout $ do
     setTitle "Add problem"
-    failedp' <- lookupGetParam "failed"
     inserted' <- lookupGetParam "inserted"
-    reason' <- lookupGetParam "reason"
-    let failedp = failedp' == pure "1"
     let inserted :: Maybe Int = (readMaybe . T.unpack) =<< inserted'
-    let reason = fromMaybe "unknown" reason'
     $(widgetFile "addproblem")
 
 createProblemFiles :: ByteString -> T.Text -> IO ()
 createProblemFiles zipfilecont dirname = do
   let pdir = T.unpack (appProblemDir compileTimeAppSettings) ++ "/" ++ T.unpack dirname
-  -- create problem dir if it doesn't exist
-  void $ try @_ @SomeException . createDirectory . T.unpack . appProblemDir $ compileTimeAppSettings
-  createDirectory pdir
+  createDirectoryIfMissing True pdir
   extractFilesFromArchive [OptDestination pdir] $ toArchive . BS.fromStrict $ zipfilecont
   return ()
 
@@ -115,8 +110,8 @@ postAddproblemR :: Handler Html
 postAddproblemR = do
   ((result, _), _) <- runFormPost . addProblemForm =<< langsM
   case result of
-    FormFailure e -> redirect (AddproblemR, [("failed", "1"), ("reason", T.pack $ show e)])
-    FormMissing -> redirect (AddproblemR, [("failed", "1")])
+    FormFailure e -> addBanner Danger [shamlet|<div>#{show e}|] >> redirect AddproblemR
+    FormMissing -> addBanner Danger "Wtf?" >> redirect AddproblemR
     FormSuccess problem' -> do
       res <-
         ( do
@@ -144,17 +139,13 @@ postAddproblemR = do
             return $ Left e
 
       either
-        ( \(SomeException e) ->
-            redirect
-              ( AddproblemR,
-                [("failed", "1"), ("reason", T.pack $ show e)]
-              )
+        ( \(SomeException e) -> do
+            addBanner Danger [shamlet|<div>#{show e}|]
+            redirect AddproblemR
         )
-        ( \k ->
-            redirect
-              ( AddproblemR,
-                [("inserted", T.pack . show . fromSqlKey $ k)]
-              )
+        ( \k -> do
+            addBanner Success [shamlet|<div>Added problem ##{show (fromSqlKey k)}|]
+            redirect HomeR
         )
         res
   where

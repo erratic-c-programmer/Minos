@@ -107,8 +107,12 @@ makeFoundation appSettings = do
   -- Perform database migration using our application's logging settings.
   runLoggingT (runSqlPool (runMigration migrateAll) pool) logFunc
   -- Insert our languages
-  void $ runSqlPool
-      (mapM (try @_ @SomeException . insert . Language) ["C++", "Python"])
+  void $
+    runSqlPool
+      ( mapM
+          (try @_ @SomeException . insert . uncurry Language)
+          [("C++", "cpp"), ("Python", "py")]
+      )
       pool
 
   -- Return the foundation

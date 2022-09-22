@@ -1,22 +1,22 @@
 
 <!-- Static navbar -->
-<nav .navbar .navbar-dark .navbar-expand-lg>
-    <div .container>
-        <div .navbar-header>
-            <button type="button" .navbar-toggler data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
-                <span class="sr-only">Toggle navigation
-                <span class="navbar-toggler-icon">
+<nav .navbar .navbar-dark .fixed-top .navbar-expand-md .bg-dark>
+    <a .navbar-brand href="#">Minos
 
-        <div #navbar .collapse .navbar-collapse>
-            <ul .nav .navbar-nav .mr-auto>
-                $forall MenuItem label route _ <- navbarLeftFilteredMenuItems
-                    <li .nav-item :Just route == mcurrentRoute:.active>
-                        <a .nav-link href="@{route}">#{label}
+    <button type="button" .navbar-toggler data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar" aria-label="Toggle navigation">
+        <span class="sr-only">Toggle navigation
+        <span class="navbar-toggler-icon">
 
-            <ul .nav .navbar-nav .navbar-right .ml-auto>
-                $forall MenuItem label route _ <- navbarRightFilteredMenuItems
-                    <li .nav-item :Just route == mcurrentRoute:.active>
-                        <a .nav-link href="@{route}">#{label}
+    <div #navbar .collapse .navbar-collapse>
+        <ul .navbar-nav .mr-auto>
+            $forall MenuItem label route _ <- navbarLeftFilteredMenuItems
+                <li .nav-item :Just route == mcurrentRoute:.active>
+                    <a .nav-link href="@{route}">#{label}
+
+        <ul .navbar-nav .navbar-right .ml-auto>
+            $forall MenuItem label route _ <- navbarRightFilteredMenuItems
+                <li .nav-item :Just route == mcurrentRoute:.active>
+                    <a .nav-link href="@{route}">#{label}
 
 <!-- Page Contents -->
 
@@ -31,6 +31,8 @@
 
     $maybe msg <- mmsg
       <div .alert .alert-info #message>#{msg}
+
+    ^{bannersWidget}
 
 
 $if (Just HomeR == mcurrentRoute)

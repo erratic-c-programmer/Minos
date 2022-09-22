@@ -1,8 +1,7 @@
-<div .masthead>
+<div .jumbotron>
     <div .container>
-        <div .row>
-            <h1 .header>
-                Minos — cruel CP judge
+        <h1 .display-3>
+            Minos — cruel CP judge
 
 <div .container>
     <!-- Starting

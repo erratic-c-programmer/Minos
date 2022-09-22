@@ -1,8 +1,10 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeApplications #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
@@ -13,10 +15,12 @@ module Handler.Problems
   )
 where
 
+import Data.Maybe (fromJust)
 import qualified Data.Text as T
-import qualified Data.Text.Encoding as T
 import Database.Persist.Sqlite (fromSqlKey)
 import Import
+import System.Directory (createDirectoryIfMissing, listDirectory)
+import Yesod.Banner
 import Yesod.Form.Bootstrap4 (BootstrapFormLayout (..), bfs, renderBootstrap4)
 
 -- PROBLEMLIST
@@ -56,18 +60,45 @@ getProblemsR probId = do
   (formWidget, enctype) <- generateFormPost . submissionForm =<< langsM
   defaultLayout $(widgetFile "problems")
 
+saveSubmission :: ProblemId -> Language -> UserId -> ByteString -> IO Text
+saveSubmission probId lang userId subCont = do
+  let sdir =
+        T.unpack (appSubmissionDir compileTimeAppSettings)
+          ++ "/"
+          ++ show probId
+          ++ "/"
+          ++ show userId
+  createDirectoryIfMissing True sdir
+  nUSubs <- length <$> listDirectory sdir
+  let filename =
+        sdir
+          ++ "/"
+          ++ show (nUSubs + 1)
+          ++ "."
+          ++ T.unpack (languageFileext lang)
+  writeFile filename subCont
+  return $ T.pack filename
+
 postProblemsR :: ProblemId -> Handler Html
 postProblemsR probId = do
   ((result, _), _) <- runFormPost . submissionForm =<< langsM
   case result of
-    FormFailure e -> redirect (AddproblemR, [("failed", "1"), ("reason", T.pack $ show e)])
-    FormMissing -> redirect (AddproblemR, [("failed", "1")])
+    FormFailure e -> addBanner Danger [shamlet|<div>#{show e}|]
+    FormMissing -> addBanner Danger "Wtf?"
     FormSuccess submission' -> do
-      subBS <- fileSourceByteString $ code submission'
-      let submission =
-            Submission
-              probId
-              (language submission')
-              0
-              (T.decodeUtf8 subBS)
-      redirect HomeR
+      ( do
+          mlang <- runDB $ get $ language submission'
+          maid <- maybeAuthId
+          let lang = fromJust mlang
+          let userId = fromJust maid
+          subBS <- fileSourceByteString $ code submission'
+          subfile <-
+            liftIO $ saveSubmission probId lang userId subBS
+          let submission = Submission probId (language submission') 0 subfile
+          subId <- runDB $ insert submission
+          void $ runDB $ insert $ UserSolves userId subId
+          addBanner Success [shamlet|<div>Submission received|]
+        )
+        `catch` \(SomeException e) -> addBanner Danger [shamlet|<div>#{show e}|]
+
+  redirect HomeR

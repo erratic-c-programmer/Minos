@@ -60,6 +60,8 @@ data AppSettings = AppSettings
     -- ^ Google Analytics code
     , appProblemDir             :: Text
     -- ^ Where problems should be stored
+    , appSubmissionDir          :: Text
+    -- ^ Where submissions should be stored
 
     , appAuthDummyLogin         :: Bool
     -- ^ Indicate if auth dummy login should be enabled.
@@ -91,6 +93,7 @@ instance FromJSON AppSettings where
         appCopyright              <- o .:  "copyright"
         appAnalytics              <- o .:? "analytics"
         appProblemDir             <- o .:  "problem-dir"
+        appSubmissionDir          <- o .:  "submission-dir"
 
         appAuthDummyLogin         <- o .:? "auth-dummy-login"      .!= dev
 
