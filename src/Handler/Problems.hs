@@ -60,24 +60,20 @@ getProblemsR probId = do
   (formWidget, enctype) <- generateFormPost . submissionForm =<< langsM
   defaultLayout $(widgetFile "problems")
 
-saveSubmission :: Problem -> Language -> User -> ByteString -> IO Text
+saveSubmission :: Problem -> Language -> User -> ByteString -> IO FilePath
 saveSubmission prob lang user subCont = do
   let sdir =
         T.unpack (appSubmissionDir compileTimeAppSettings)
-          ++ "/"
-          ++ T.unpack (problemTitle prob)
-          ++ "/"
-          ++ T.unpack (userUname user)
+          </> T.unpack (problemTitle prob)
+          </> T.unpack (userUname user)
   createDirectoryIfMissing True sdir
   nUSubs <- length <$> listDirectory sdir
   let filename =
         sdir
-          ++ "/"
-          ++ show (nUSubs + 1)
-          ++ "."
-          ++ T.unpack (languageFileext lang)
+          </> show (nUSubs + 1)
+          </> T.unpack (languageFileext lang)
   writeFile filename subCont
-  return $ T.pack filename
+  return filename
 
 postProblemsR :: ProblemId -> Handler Html
 postProblemsR probId = do
@@ -93,7 +89,7 @@ postProblemsR probId = do
           subBS <- fileSourceByteString $ code submission'
           subfile <-
             liftIO $ saveSubmission prob lang user subBS
-          let submission = Submission probId (language submission') 0 subfile
+          let submission = Submission probId (language submission') 0 $ T.pack subfile
           subId <- runDB $ insert submission
           userId <- fromJust <$> maybeAuthId
           void $ runDB $ insert $ UserSolves userId subId
