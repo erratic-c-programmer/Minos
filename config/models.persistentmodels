@@ -33,7 +33,7 @@ Language json
   deriving Eq Show
 
 Submission json
-  problemid ProblemId
+  problem ProblemId
   language LanguageId
   score Int
   codeFile Text
