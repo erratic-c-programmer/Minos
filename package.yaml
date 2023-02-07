@@ -3,57 +3,57 @@ version: "0.0.0"
 
 dependencies:
 
+- aeson >=2.0 && <2.1
 - base >=4.9.1.0 && <5
-- yesod >=1.6 && <1.8
-- yesod-core >=1.6 && <1.8
-- yesod-auth >=1.6 && <1.8
-- yesod-static >=1.6 && <1.8
-- yesod-form >=1.6 && <1.8
+- blaze-html
+- bytestring
+- case-insensitive
 - classy-prelude >=1.5 && <1.6
 - classy-prelude-conduit >=1.5 && <1.6
 - classy-prelude-yesod >=1.5 && <1.6
-- bytestring >=0.10 && <0.11
-- text >=0.11 && <2.0
-- persistent >=2.12 && <2.15
-- persistent-sqlite >=2.12 && <2.15
-- persistent-template >=2.12 && <2.15
-- template-haskell
-- shakespeare >=2.0 && <2.1
-- hjsmin >=0.1 && <0.3
-- monad-control >=0.3 && <1.1
-- wai-extra >=3.1 && <3.2
-- yaml >=0.11 && <0.12
-- http-client-tls >=0.3 && <0.4
-- http-conduit >=2.3 && <2.4
-- directory >=1.1 && <1.4
-- warp >=3.0 && <3.4
-- data-default
-- aeson >=2.0 && <2.1
-- conduit >=1.0 && <2.0
-- monad-logger >=0.3 && <0.4
-- fast-logger >=3.1 && <3.2
-- wai-logger >=2.4 && <2.6
-- blaze-html
-- case-insensitive
 - clock
+- conduit >=1.0 && <2.0
 - containers
+- data-default
+- directory >=1.1 && <1.4
 - exceptions
 - extra
+- fast-logger >=3.1 && <3.2
 - file-embed
 - filepath
 - foreign-store
+- hjsmin >=0.1 && <0.3
+- http-client-tls >=0.3 && <0.4
+- http-conduit >=2.3 && <2.4
+- monad-control >=0.3 && <1.1
+- monad-logger >=0.3 && <0.4
 - monad-parallel
+- persistent >=2.12 && <2.15
+- persistent-sqlite >=2.12 && <2.15
+- persistent-template >=2.12 && <2.15
 - process-extras
 - safe
+- shakespeare >=2.0 && <2.1
 - strict
+- template-haskell
+- text >=0.11 && <2.0
 - time
 - transformers
 - unordered-containers
 - vector
 - wai
+- wai-extra >=3.1 && <3.2
+- wai-logger >=2.4 && <2.6
+- warp >=3.0 && <3.4
 - word8
+- yaml >=0.11 && <0.12
+- yesod >=1.6 && <1.8
+- yesod-auth >=1.6 && <1.8
 - yesod-auth-hashdb
+- yesod-core >=1.6 && <1.8
+- yesod-form >=1.6 && <1.8
 - yesod-form-bootstrap4
+- yesod-static >=1.6 && <1.8
 - zip-archive
 
 # The library contains all of our application code. The executable
