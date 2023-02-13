@@ -32,6 +32,7 @@ dependencies:
 - persistent-sqlite >=2.12 && <2.15
 - persistent-template >=2.12 && <2.15
 - process-extras
+- runspawner
 - safe
 - shakespeare >=2.0 && <2.1
 - strict

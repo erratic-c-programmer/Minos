@@ -18,6 +18,7 @@ import qualified Data.Text as T
 import Import
 import System.Exit (ExitCode)
 import System.Process.Extra (system)
+import Network.Runspawner.Protocol
 import Yesod.Banner
 
 -- | Parameters supported by the compile command substitutor
@@ -67,6 +68,10 @@ realiseCc (CcParams inf outf) = realiseCc' [] False
               _ -> res
           | c == '%' = res
           | otherwise = T.singleton c : res
+
+gradeSubmission :: Submission -> IO ()
+gradeSubmission sub = do
+  let req = [""]
 
 compileFile :: Submission -> Handler ExitCode
 compileFile sub = do
