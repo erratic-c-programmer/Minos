@@ -41,7 +41,7 @@ import Handler.Home
 import Handler.Problems
 import Handler.Profile
 import Handler.Signup
-import Handler.SubProc
+import Handler.Submission
 import Import
 import Language.Haskell.TH.Syntax (qLocation)
 import Network.HTTP.Client.TLS (getGlobalManager)

@@ -33,6 +33,8 @@ ip-from-header: "_env:YESOD_IP_FROM_HEADER:false"
 
 problem-dir: "_env:MINOS_PROBLEM_DIR:problems"
 submission-dir: "_env:MINOS_PROBLEM_DIR:submissions"
+runspawn-host: "127.0.0.1"
+runspawn-port: "2345"
 
 database:
   # See config/test-settings.yml for an override during tests

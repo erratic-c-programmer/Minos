@@ -62,6 +62,10 @@ data AppSettings = AppSettings
     -- ^ Where problems should be stored
     , appSubmissionDir          :: Text
     -- ^ Where submissions should be stored
+    , appRunspawnHost           :: Text
+    -- ^ Host on which runspawn is listening
+    , appRunspawnPort           :: Text
+    -- ^ Port on which runspawn is listening
 
     , appAuthDummyLogin         :: Bool
     -- ^ Indicate if auth dummy login should be enabled.
@@ -94,6 +98,8 @@ instance FromJSON AppSettings where
         appAnalytics              <- o .:? "analytics"
         appProblemDir             <- o .:  "problem-dir"
         appSubmissionDir          <- o .:  "submission-dir"
+        appRunspawnHost           <- o .:  "runspawn-host"
+        appRunspawnPort           <- o .:  "runspawn-port"
 
         appAuthDummyLogin         <- o .:? "auth-dummy-login"      .!= dev
 

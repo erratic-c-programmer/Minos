@@ -1,0 +1,6 @@
+<div .container>
+    <h1 .header>
+        $maybe title <- probTitle
+            Submission for #{title}
+        $nothing
+            Submission for nonexistent problem (???)

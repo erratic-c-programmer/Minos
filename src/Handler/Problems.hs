@@ -32,6 +32,42 @@ getProblemsListR = do
 
 -- INDIVIDUAL PROBLEM PAGE
 
+getProblemsR :: ProblemId -> Handler Html
+getProblemsR probId = do
+  prob <- runDB $ get404 probId
+  let probTitle = problemTitle prob
+      probContent = preEscapedToMarkup $ problemStatement prob
+  (formWidget, enctype) <- generateFormPost . submissionForm =<< langsM
+  defaultLayout $(widgetFile "problems")
+
+postProblemsR :: ProblemId -> Handler Html
+postProblemsR probId = do
+  ((result, _), _) <- runFormPost . submissionForm =<< langsM
+  case result of
+    FormFailure e -> addBanner Danger [shamlet|<div>#{show e}|]
+    FormMissing -> addBanner Danger "Wtf?"
+    FormSuccess submission' -> do
+      ( do
+          lang <- fromJust <$> runDB (get $ language submission')
+          user <- runDB $ fromJust <$> (get . fromJust =<< maybeAuthId)
+          prob <- fromJust <$> runDB (get probId)
+          subBS <- fileSourceByteString $ code submission'
+          subfile <- liftIO $ saveSubmission prob lang user subBS
+          let submission =
+                Submission
+                  probId
+                  (language submission')
+                  (-1) -- ungraded
+                  (T.pack subfile)
+          subId <- runDB $ insert submission
+          userId <- fromJust <$> maybeAuthId
+          void $ runDB $ insert $ UserSolves userId subId
+          addBanner Success [shamlet|<div>Submission received|]
+        )
+        `catch` \(SomeException e) -> addBanner Danger [shamlet|<div>#{show e}|]
+
+  redirect HomeR
+
 langsM :: Handler [(Text, Key Language)]
 langsM =
   map (\(Entity k v) -> (languageName v, k))
@@ -52,16 +88,8 @@ submissionForm langs =
     bfs' :: Text -> FieldSettings site
     bfs' = bfs
 
-getProblemsR :: ProblemId -> Handler Html
-getProblemsR probId = do
-  prob <- runDB $ get404 probId
-  let probTitle = problemTitle prob
-      probContent = preEscapedToMarkup $ problemStatement prob
-  (formWidget, enctype) <- generateFormPost . submissionForm =<< langsM
-  defaultLayout $(widgetFile "problems")
-
 saveSubmission :: Problem -> Language -> User -> ByteString -> IO FilePath
-saveSubmission prob lang user subCont = do
+saveSubmission prob lang user subContents = do
   let sdir =
         T.unpack (appSubmissionDir compileTimeAppSettings)
           </> T.unpack (problemTitle prob)
@@ -70,31 +98,7 @@ saveSubmission prob lang user subCont = do
   nUSubs <- length <$> listDirectory sdir
   let filename =
         sdir
-          </> show (nUSubs + 1)
+          </> show (nUSubs + 1) -- TODO: unsafe
           </> T.unpack (languageFileext lang)
-  writeFile filename subCont
+  writeFile filename subContents
   return filename
-
-postProblemsR :: ProblemId -> Handler Html
-postProblemsR probId = do
-  ((result, _), _) <- runFormPost . submissionForm =<< langsM
-  case result of
-    FormFailure e -> addBanner Danger [shamlet|<div>#{show e}|]
-    FormMissing -> addBanner Danger "Wtf?"
-    FormSuccess submission' -> do
-      ( do
-          lang <- fromJust <$> runDB (get $ language submission')
-          user <- runDB $ fromJust <$> (get . fromJust =<< maybeAuthId)
-          prob <- fromJust <$> runDB (get probId)
-          subBS <- fileSourceByteString $ code submission'
-          subfile <-
-            liftIO $ saveSubmission prob lang user subBS
-          let submission = Submission probId (language submission') 0 $ T.pack subfile
-          subId <- runDB $ insert submission
-          userId <- fromJust <$> maybeAuthId
-          void $ runDB $ insert $ UserSolves userId subId
-          addBanner Success [shamlet|<div>Submission received|]
-        )
-        `catch` \(SomeException e) -> addBanner Danger [shamlet|<div>#{show e}|]
-
-  redirect HomeR

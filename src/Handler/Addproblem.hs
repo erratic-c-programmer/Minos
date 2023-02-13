@@ -26,69 +26,6 @@ import Text.Read (readMaybe)
 import Yesod.Banner
 import Yesod.Form.Bootstrap4 (bfs)
 
-data ProblemForm = ProblemForm
-  { problemTitle' :: Text,
-    problemStatement' :: FileInfo,
-    problemPdfurl' :: Maybe Text,
-    problemTags' :: Text,
-    problemTlimit' :: Int,
-    problemTests' :: FileInfo,
-    problemCcs' :: [(Key Language, Text)]
-  }
-
-langsM :: Handler [(Key Language, Text)]
-langsM =
-  map (\(Entity k v) -> (k, languageName v))
-    <$> runDB (selectList [] [])
-
-addProblemForm :: [(Key Language, Text)] -> Html -> MForm Handler (FormResult ProblemForm, Widget)
-addProblemForm langs extra = do
-  (titleRes, titleView) <- mreq textField (bfs' "Title") Nothing
-  (stmtRes, stmtView) <- mreq fileField (bfs' "problem statement (HTML)") Nothing
-  (pdfRes, pdfView) <- mopt urlField (bfs' "PDF URL") Nothing
-  (tagsRes, tagsView) <- mreq textField (bfs' "Tags") Nothing
-  (tlimRes, tlimView) <- mreq intField (bfs' "Time limit") $ Just 1000
-  (tcRes, tcView) <- mreq fileField (bfs' "Testcases (zipped)") Nothing
-  ccRVs <- forM (replicate (length langs) "") $ flip (mreq textField) Nothing
-
-  let problemRes =
-        ProblemForm
-          <$> titleRes
-          <*> stmtRes
-          <*> pdfRes
-          <*> tagsRes
-          <*> tlimRes
-          <*> tcRes
-          <*> (zip (fst <$> langs) <$> sequenceA (fst <$> ccRVs))
-  let formWidget = do
-        let views = [titleView, stmtView, pdfView, tagsView, tlimView, tcView]
-        let ccvns = zip (snd <$> langs) $ snd <$> ccRVs
-        toWidget
-          [lucius|
-          |]
-        [whamlet|
-                #{extra}
-                $forall view <- views
-                  <div .form-group>
-                    <label for=#{fvId view}>#{fvLabel view}
-                    ^{fvInput view}
-
-                <table .table>
-                  <thead .thead-dark>
-                    <tr>
-                      <th>Language
-                      <th>Compile command
-                  <tbody>
-                    $forall (name, view) <- ccvns
-                      <tr>
-                        <th>#{name}
-                        <th>^{fvInput view}
-        |]
-  return (problemRes, formWidget)
-  where
-    bfs' :: Text -> FieldSettings site
-    bfs' = bfs
-
 getAddproblemR :: Handler Html
 getAddproblemR = do
   langs <- langsM
@@ -98,13 +35,6 @@ getAddproblemR = do
     inserted' <- lookupGetParam "inserted"
     let inserted :: Maybe Int = (readMaybe . T.unpack) =<< inserted'
     $(widgetFile "addproblem")
-
-createProblemFiles :: ByteString -> T.Text -> IO ()
-createProblemFiles zipfilecont dirname = do
-  let pdir = T.unpack (appProblemDir compileTimeAppSettings) ++ "/" ++ T.unpack dirname
-  createDirectoryIfMissing True pdir
-  extractFilesFromArchive [OptDestination pdir] $ toArchive . BS.fromStrict $ zipfilecont
-  return ()
 
 postAddproblemR :: Handler Html
 postAddproblemR = do
@@ -150,3 +80,73 @@ postAddproblemR = do
         res
   where
     (|||) = liftM2 (||)
+
+data ProblemForm = ProblemForm
+  { problemTitle' :: Text,
+    problemStatement' :: FileInfo,
+    problemPdfurl' :: Maybe Text,
+    problemTags' :: Text,
+    problemTlimit' :: Int,
+    problemTests' :: FileInfo,
+    problemCcs' :: [(Key Language, Text)]
+  }
+
+langsM :: Handler [(Key Language, Text)]
+langsM =
+  map (\(Entity k v) -> (k, languageName v))
+    <$> runDB (selectList [] [])
+
+addProblemForm :: [(Key Language, Text)] -> Html -> MForm Handler (FormResult ProblemForm, Widget)
+addProblemForm langs extra = do
+  (titleRes, titleView) <- mreq textField (bfs' "Title") Nothing
+  (stmtRes, stmtView) <- mreq fileField (bfs' "problem statement (HTML)") Nothing
+  (pdfRes, pdfView) <- mopt urlField (bfs' "PDF URL") Nothing
+  (tagsRes, tagsView) <- mreq textField (bfs' "Tags") Nothing
+  (tlimRes, tlimView) <- mreq intField (bfs' "Time limit") $ Just 1000
+  (tcRes, tcView) <- mreq fileField (bfs' "Testcases (zipped)") Nothing
+  ccRVs <- forM (replicate (length langs) "") $ flip (mreq textField) Nothing
+
+  let problemRes =
+        ProblemForm
+          <$> titleRes
+          <*> stmtRes
+          <*> pdfRes
+          <*> tagsRes
+          <*> tlimRes
+          <*> tcRes
+          <*> (zip (fst <$> langs) <$> traverse fst ccRVs)
+  let formWidget = do
+        let views = [titleView, stmtView, pdfView, tagsView, tlimView, tcView]
+        let ccvns = zip (snd <$> langs) $ snd <$> ccRVs
+        toWidget
+          [lucius|
+          |]
+        [whamlet|
+                #{extra}
+                $forall view <- views
+                  <div .form-group>
+                    <label for=#{fvId view}>#{fvLabel view}
+                    ^{fvInput view}
+
+                <table .table>
+                  <thead .thead-dark>
+                    <tr>
+                      <th>Language
+                      <th>Compile command
+                  <tbody>
+                    $forall (name, view) <- ccvns
+                      <tr>
+                        <th>#{name}
+                        <th>^{fvInput view}
+        |]
+  return (problemRes, formWidget)
+  where
+    bfs' :: Text -> FieldSettings site
+    bfs' = bfs
+
+createProblemFiles :: ByteString -> T.Text -> IO ()
+createProblemFiles zipfilecont dirname = do
+  let pdir = T.unpack (appProblemDir compileTimeAppSettings) ++ "/" ++ T.unpack dirname
+  createDirectoryIfMissing True pdir
+  extractFilesFromArchive [OptDestination pdir] $ toArchive . BS.fromStrict $ zipfilecont
+  return ()

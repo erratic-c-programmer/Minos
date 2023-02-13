@@ -18,4 +18,4 @@
 /problems ProblemsListR GET
 /problems/#ProblemId ProblemsR GET POST
 
-/subproc/#ProblemId SubProcR GET
+/submission/#SubmissionId SubmissionR GET

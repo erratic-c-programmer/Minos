@@ -194,7 +194,7 @@ instance Yesod App where
   isAuthorized SignupR _ = return Authorized -- TODO
   isAuthorized (ProblemsR _) _ = return Authorized -- TODO
   isAuthorized ProblemsListR _ = return Authorized
-  isAuthorized (SubProcR _) _ = return Authorized -- TODO
+  isAuthorized (SubmissionR _) _ = return Authorized -- TODO
   -- the profile route requires that the user is authenticated, so we
   -- delegate to that function
   isAuthorized ProfileR _ = isAuthenticated

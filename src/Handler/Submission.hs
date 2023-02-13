@@ -1,12 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE OverloadedStrings #-}
+{-# LANGUAGE QuasiQuotes #-}
 {-# LANGUAGE ScopedTypeVariables #-}
+{-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
 {-# LANGUAGE NoImplicitPrelude #-}
 
-module Handler.SubProc
-  ( getSubProcR
+-- | Handler
+module Handler.Submission
+  ( getSubmissionR,
   )
 where
 
@@ -15,6 +18,7 @@ import qualified Data.Text as T
 import Import
 import System.Exit (ExitCode)
 import System.Process.Extra (system)
+import Yesod.Banner
 
 -- | Parameters supported by the compile command substitutor
 data CcParams = CcParams
@@ -26,15 +30,30 @@ data CcParams = CcParams
 outExt :: String
 outExt = "out"
 
--- |
---  Turns the compile command into a runnable string
---  by e.g. doing all the parameter substitutions.
+getSubmissionR :: SubmissionId -> Handler Html
+getSubmissionR subId = do
+  probTitle <-
+    fmap problemTitle
+      <$> (runDB . get . submissionProblem =<< runDB (get404 subId))
+  subScore <- submissionScore <$> runDB (get404 subId)
+
+  whenM
+    ( (==)
+        <$> (submissionScore <$> runDB (get404 subId))
+        <*> pure (-1)
+    )
+    $ return () -- TODO: grade submisisons here
+
+  defaultLayout $(widgetFile "subproc")
+
+-- | Turns the compile command into a runnable string
+--    by e.g. doing all the parameter substitutions.
 realiseCc :: CcParams -> Text -> Text
 realiseCc (CcParams inf outf) = realiseCc' [] False
   where
     rinf = reverse inf
     routf = reverse outf
-    realiseCc' res _ "" = reverse $ foldl' (++) "" res
+    realiseCc' res _ "" = reverse $ T.concat res
     realiseCc' res subp cc' =
       realiseCc' res' (c == '%' && not subp) (T.tail cc')
       where
@@ -54,9 +73,9 @@ compileFile sub = do
   let inputfn = T.unpack $ submissionCodeFile sub
   let outputfn = T.unpack (submissionCodeFile sub) <.> outExt
   cmd <-
-    realiseCc (CcParams inputfn outputfn) .
-    problemCmdCommand .
-    fromJust
+    realiseCc (CcParams inputfn outputfn)
+      . problemCmdCommand
+      . fromJust
       <$> ( runDB . get $
               ProblemCmdKey
                 (submissionProblem sub)
@@ -64,6 +83,3 @@ compileFile sub = do
           )
 
   liftIO $ system $ T.unpack cmd
-
-getSubProcR :: ProblemId -> Handler Html
-getSubProcR probId = undefined

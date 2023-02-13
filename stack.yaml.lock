@@ -3,7 +3,18 @@
 # For more information, please see the documentation at:
 #   https://docs.haskellstack.org/en/stable/lock_files
 
-packages: []
+packages:
+- completed:
+    commit: 38bade3c266f480c0f0524fb85377badee6142be
+    git: https://github.com/tux314159/runspawner
+    name: runspawner
+    pantry-tree:
+      sha256: 841c67cdfd500ab4232efe50453bf674c3356507689e76a0f2eee85ce2d007c3
+      size: 1066
+    version: 0.1.0.0
+  original:
+    commit: 38bade3c266f480c0f0524fb85377badee6142be
+    git: https://github.com/tux314159/runspawner
 snapshots:
 - completed:
     sha256: 17870c63f8041ac17a38096124abeb953cb14d84bfc96deb88f9b24daa97b347
